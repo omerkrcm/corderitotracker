@@ -1,16 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useProfile } from "@/lib/profile-context";
 import { toDateString, addDays, formatDateLabel, formatTime } from "@/lib/date";
 import { resolveEntryTotals, type LogEntry, type Target } from "@/lib/types";
 import { ProgressBar } from "@/components/ProgressBar";
+import { WeeklySummary } from "@/components/WeeklySummary";
 import { getUserColorClass, getInitial } from "@/lib/user-color";
 
 export default function DashboardPage() {
+  return (
+    <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+
+function DashboardContent() {
   const { activeUser, loading: profileLoading } = useProfile();
-  const [selectedDate, setSelectedDate] = useState(() => toDateString());
+  const searchParams = useSearchParams();
+  const [selectedDate, setSelectedDate] = useState(
+    () => searchParams.get("date") || toDateString()
+  );
   const [entries, setEntries] = useState<LogEntry[]>([]);
   const [target, setTarget] = useState<Target | null>(null);
   const [loading, setLoading] = useState(true);
@@ -105,7 +118,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-2 gap-3">
         <Link
-          href="/log"
+          href={`/log?date=${selectedDate}`}
           className="rounded-2xl bg-accent px-4 py-3 text-center text-sm font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent-hover"
         >
           + Log food
@@ -117,6 +130,14 @@ export default function DashboardPage() {
           ⚖️ Log weight
         </Link>
       </div>
+
+      {!loading && target && (
+        <WeeklySummary
+          userId={activeUser.id}
+          targetKcal={target.target_kcal}
+          targetProtein={target.target_protein}
+        />
+      )}
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-muted-foreground">Entries</h2>

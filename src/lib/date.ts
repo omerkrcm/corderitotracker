@@ -40,3 +40,23 @@ export function formatDateLabel(date: string): string {
     day: "numeric",
   });
 }
+
+/** Monday of the week containing `date` (ISO week, local time). */
+export function startOfWeek(date: string): string {
+  const d = new Date(`${date}T00:00:00`);
+  const day = d.getDay(); // 0 = Sunday .. 6 = Saturday
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diffToMonday);
+  return toDateString(d);
+}
+
+/** The 7 YYYY-MM-DD dates (Mon..Sun) of the week starting at `weekStart`. */
+export function getWeekDates(weekStart: string): string[] {
+  return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+}
+
+export function dayAbbrev(date: string): string {
+  return new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
+    weekday: "short",
+  });
+}

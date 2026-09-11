@@ -1,12 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useProfile } from "@/lib/profile-context";
+import { toDateString, formatDateLabel } from "@/lib/date";
 import type { Food } from "@/lib/types";
 
 export default function LogPage() {
+  return (
+    <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}>
+      <LogPageContent />
+    </Suspense>
+  );
+}
+
+function LogPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { activeUser } = useProfile();
   const [mode, setMode] = useState<"food" | "quick">("food");
   const [foods, setFoods] = useState<Food[]>([]);
@@ -15,6 +25,9 @@ export default function LogPage() {
   const [quantity, setQuantity] = useState("1");
   const [kcal, setKcal] = useState("");
   const [protein, setProtein] = useState("");
+  const [date, setDate] = useState(
+    () => searchParams.get("date") || toDateString()
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,6 +42,11 @@ export default function LogPage() {
     if (!q) return foods;
     return foods.filter((f) => f.name.toLowerCase().includes(q));
   }, [foods, search]);
+
+  function goBackToDashboard() {
+    const today = toDateString();
+    router.push(date === today ? "/" : `/?date=${date}`);
+  }
 
   async function handleFoodSubmit(e: FormEvent) {
     e.preventDefault();
@@ -47,6 +65,7 @@ export default function LogPage() {
         user_id: activeUser.id,
         food_id: selectedFood.id,
         quantity: qty,
+        date,
       }),
     });
     setSubmitting(false);
@@ -56,7 +75,7 @@ export default function LogPage() {
       setError(body.error ?? "Something went wrong.");
       return;
     }
-    router.push("/");
+    goBackToDashboard();
   }
 
   async function handleQuickSubmit(e: FormEvent) {
@@ -78,6 +97,7 @@ export default function LogPage() {
         user_id: activeUser.id,
         kcal: kcalNum,
         protein: proteinNum,
+        date,
       }),
     });
     setSubmitting(false);
@@ -87,11 +107,38 @@ export default function LogPage() {
       setError(body.error ?? "Something went wrong.");
       return;
     }
-    router.push("/");
+    goBackToDashboard();
   }
+
+  const isToday = date === toDateString();
 
   return (
     <div className="flex flex-col gap-4">
+      <label className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface px-4 py-2.5 text-sm shadow-sm">
+        <span className="font-medium text-muted-foreground">
+          Logging for{" "}
+          <span className="text-foreground">{formatDateLabel(date)}</span>
+        </span>
+        <span className="flex items-center gap-2">
+          <input
+            type="date"
+            value={date}
+            max={toDateString()}
+            onChange={(e) => setDate(e.target.value)}
+            className="rounded-lg border border-border bg-background px-2 py-1 text-xs outline-none focus:border-accent"
+          />
+          {!isToday && (
+            <button
+              type="button"
+              onClick={() => setDate(toDateString())}
+              className="text-xs font-medium text-accent-soft-foreground hover:underline"
+            >
+              Today
+            </button>
+          )}
+        </span>
+      </label>
+
       <div className="flex gap-1 rounded-full bg-surface-muted p-1">
         <button
           onClick={() => setMode("food")}

@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase-server";
 import { errorResponse, requireValidUserId } from "@/lib/api-helpers";
 
-// GET /api/log-entries?user_id=...&date=YYYY-MM-DD (date optional)
+// GET /api/log-entries?user_id=...&date=YYYY-MM-DD
+// or   /api/log-entries?user_id=...&from=YYYY-MM-DD&to=YYYY-MM-DD (inclusive range)
+// Both date filters are optional; omitting both returns everything for the user.
 export async function GET(request: NextRequest) {
   const userId = request.nextUrl.searchParams.get("user_id");
   const date = request.nextUrl.searchParams.get("date");
+  const from = request.nextUrl.searchParams.get("from");
+  const to = request.nextUrl.searchParams.get("to");
 
   const check = await requireValidUserId(userId);
   if (!check.ok) return check.response;
@@ -18,7 +22,12 @@ export async function GET(request: NextRequest) {
     .order("date", { ascending: false })
     .order("time", { ascending: false });
 
-  if (date) query = query.eq("date", date);
+  if (date) {
+    query = query.eq("date", date);
+  } else {
+    if (from) query = query.gte("date", from);
+    if (to) query = query.lte("date", to);
+  }
 
   const { data, error } = await query;
   if (error) return errorResponse(error.message, 500);
