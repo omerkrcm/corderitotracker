@@ -1,19 +1,16 @@
-// Small fixed palette so each profile gets a consistent, visually distinct
-// color. Keyed off user id (not list position) so it doesn't shift if
-// someone is renamed or the API's name-sort order changes.
-const PALETTE = [
-  { bg: "#dbeafe", fg: "#1d4ed8", solid: "#2563eb" }, // blue
-  { bg: "#fce7f3", fg: "#be185d", solid: "#db2777" }, // pink
-  { bg: "#dcfce7", fg: "#15803d", solid: "#16a34a" }, // green
-  { bg: "#fef3c7", fg: "#b45309", solid: "#d97706" }, // amber
-];
+// Each profile gets one of a fixed set of CSS classes (defined in
+// globals.css as `.user-color-0`..`.user-color-3`), keyed off user id
+// rather than list position so it doesn't shift if someone is renamed.
+// Using classes (not inline hex styles) lets the light/dark palette
+// swap in globals.css apply automatically.
+const SLOT_COUNT = 4;
 
-export function getUserColor(id: string) {
+export function getUserColorClass(id: string): string {
   let hash = 0;
   for (let i = 0; i < id.length; i++) {
     hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
   }
-  return PALETTE[hash % PALETTE.length];
+  return `user-color-${hash % SLOT_COUNT}`;
 }
 
 export function getInitial(name: string) {

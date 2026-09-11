@@ -1,26 +1,107 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------
+ * Design tokens — warm, colorful palette. Light values here, dark
+ * overrides below under prefers-color-scheme. Tailwind v4's `dark:`
+ * variant already follows prefers-color-scheme by default, but most of
+ * these are consumed as plain CSS custom properties (via @theme inline
+ * or inline styles) so the swap happens automatically with no `dark:`
+ * classes needed anywhere.
+ * ------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --background: #fdf6ee;
+  --surface: #ffffff;
+  --surface-muted: #f7ead9;
+  --foreground: #2b2016;
+  --muted-foreground: #8a7862;
+  --border: #ecdfca;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --accent: #e2622f;
+  --accent-hover: #cc5325;
+  --accent-foreground: #fffaf5;
+  --accent-soft: #fde3d3;
+  --accent-soft-foreground: #9a3d17;
+
+  --protein: #12836a;
+  --protein-soft: #d9f0e6;
+  --warning: #c2740a;
+  --warning-soft: #fbead0;
+  --danger: #c22f2f;
+
+  --user-0-bg: #ffe1cf;
+  --user-0-fg: #b6491a;
+  --user-1-bg: #cdeee3;
+  --user-1-fg: #0f6e59;
+  --user-2-bg: #fdedb8;
+  --user-2-fg: #8a5a06;
+  --user-3-bg: #f3ddf5;
+  --user-3-fg: #7c2a86;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1c1611;
+    --surface: #251d16;
+    --surface-muted: #2f251c;
+    --foreground: #f5ecdf;
+    --muted-foreground: #b0a08b;
+    --border: #3c2f22;
+
+    --accent: #ff7a45;
+    --accent-hover: #ff8c5c;
+    --accent-foreground: #211307;
+    --accent-soft: #40230f;
+    --accent-soft-foreground: #ffb98c;
+
+    --protein: #4ecda0;
+    --protein-soft: #123527;
+    --warning: #f0ab3d;
+    --warning-soft: #3a2a0c;
+    --danger: #ef6161;
+
+    --user-0-bg: #4a2413;
+    --user-0-fg: #ffb088;
+    --user-1-bg: #123832;
+    --user-1-fg: #5eead4;
+    --user-2-bg: #3d2c0a;
+    --user-2-fg: #fbcd52;
+    --user-3-bg: #3b1740;
+    --user-3-fg: #eab0f2;
   }
 }
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-foreground: var(--accent-soft-foreground);
+
+  --color-protein: var(--protein);
+  --color-protein-soft: var(--protein-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Per-user avatar colors as classes (not inline styles) so the light/dark
+ * swap above applies automatically without any JS involvement. */
+.user-color-0 { background-color: var(--user-0-bg); color: var(--user-0-fg); }
+.user-color-1 { background-color: var(--user-1-bg); color: var(--user-1-fg); }
+.user-color-2 { background-color: var(--user-2-bg); color: var(--user-2-fg); }
+.user-color-3 { background-color: var(--user-3-bg); color: var(--user-3-fg); }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

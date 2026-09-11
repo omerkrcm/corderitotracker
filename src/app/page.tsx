@@ -6,7 +6,7 @@ import { useProfile } from "@/lib/profile-context";
 import { toDateString, formatTime } from "@/lib/date";
 import { resolveEntryTotals, type LogEntry, type Target } from "@/lib/types";
 import { ProgressBar } from "@/components/ProgressBar";
-import { getUserColor, getInitial } from "@/lib/user-color";
+import { getUserColorClass, getInitial } from "@/lib/user-color";
 
 export default function DashboardPage() {
   const { activeUser, loading: profileLoading } = useProfile();
@@ -43,7 +43,7 @@ export default function DashboardPage() {
   }
 
   if (profileLoading || !activeUser) {
-    return <p className="text-black/50">Loading…</p>;
+    return <p className="text-muted-foreground">Loading…</p>;
   }
 
   const totals = entries.reduce(
@@ -56,14 +56,12 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="flex flex-col gap-4 rounded-2xl border border-black/10 bg-white p-4">
-        <h2 className="flex items-center gap-2 text-sm font-medium text-black/50">
+      <section className="flex flex-col gap-4 rounded-3xl border border-border bg-surface p-4 shadow-sm">
+        <h2 className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <span
-            className="flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-semibold"
-            style={{
-              backgroundColor: getUserColor(activeUser.id).bg,
-              color: getUserColor(activeUser.id).fg,
-            }}
+            className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-semibold ${getUserColorClass(
+              activeUser.id
+            )}`}
           >
             {getInitial(activeUser.name)}
           </span>
@@ -74,40 +72,44 @@ export default function DashboardPage() {
           value={totals.kcal}
           target={target?.target_kcal ?? 0}
           unit="kcal"
-          color="#2563eb"
+          tone="accent"
         />
         <ProgressBar
           label="Protein"
           value={totals.protein}
           target={target?.target_protein ?? 0}
           unit="g"
-          color="#16a34a"
+          tone="protein"
         />
       </section>
 
       <div className="grid grid-cols-2 gap-3">
         <Link
           href="/log"
-          className="rounded-xl bg-black px-4 py-3 text-center text-sm font-medium text-white"
+          className="rounded-2xl bg-accent px-4 py-3 text-center text-sm font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent-hover"
         >
           + Log food
         </Link>
         <Link
           href="/weight"
-          className="rounded-xl border border-black/10 bg-white px-4 py-3 text-center text-sm font-medium"
+          className="rounded-2xl border border-border bg-surface px-4 py-3 text-center text-sm font-semibold shadow-sm"
         >
           ⚖️ Log weight
         </Link>
       </div>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-black/50">Today&apos;s entries</h2>
+        <h2 className="text-sm font-medium text-muted-foreground">
+          Today&apos;s entries
+        </h2>
         {loading ? (
-          <p className="text-sm text-black/40">Loading…</p>
+          <p className="text-sm text-muted-foreground">Loading…</p>
         ) : entries.length === 0 ? (
-          <p className="text-sm text-black/40">Nothing logged yet today.</p>
+          <p className="text-sm text-muted-foreground">
+            Nothing logged yet today.
+          </p>
         ) : (
-          <ul className="flex flex-col divide-y divide-black/5 rounded-2xl border border-black/10 bg-white">
+          <ul className="flex flex-col divide-y divide-border rounded-3xl border border-border bg-surface shadow-sm">
             {entries.map((entry) => {
               const { kcal, protein } = resolveEntryTotals(entry);
               const name = entry.food?.name ?? "Quick log";
@@ -120,10 +122,13 @@ export default function DashboardPage() {
                     <p className="truncate text-sm font-medium">
                       {name}
                       {entry.quantity != null && entry.quantity !== 1 && (
-                        <span className="text-black/40"> ×{entry.quantity}</span>
+                        <span className="text-muted-foreground">
+                          {" "}
+                          ×{entry.quantity}
+                        </span>
                       )}
                     </p>
-                    <p className="text-xs text-black/40">
+                    <p className="text-xs text-muted-foreground">
                       {formatTime(entry.time)} · {Math.round(kcal)} kcal ·{" "}
                       {Math.round(protein)}g protein
                     </p>
@@ -131,7 +136,7 @@ export default function DashboardPage() {
                   <button
                     onClick={() => deleteEntry(entry.id)}
                     disabled={deletingId === entry.id}
-                    className="shrink-0 rounded-full px-2 py-1 text-xs text-black/40 hover:bg-black/5 hover:text-red-600"
+                    className="shrink-0 rounded-full px-2 py-1 text-xs text-muted-foreground hover:bg-surface-muted hover:text-danger"
                     aria-label={`Delete ${name}`}
                   >
                     ✕

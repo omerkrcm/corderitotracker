@@ -34,7 +34,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fdf6ee" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c1611" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -46,10 +49,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-neutral-50 text-black">
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         <ProfileProvider>
-          <header className="sticky top-0 z-10 flex items-center justify-between border-b border-black/10 bg-white/95 px-4 py-3 backdrop-blur">
-            <h1 className="text-base font-semibold">Corderito Tracker</h1>
+          <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface/90 px-4 py-3 backdrop-blur">
+            <h1 className="flex items-center gap-1.5 text-base font-semibold">
+              <span aria-hidden>🐑</span>
+              Corderito Tracker
+            </h1>
             <ProfilePicker />
           </header>
           <main className="mx-auto w-full max-w-lg flex-1 px-4 pb-24 pt-4">

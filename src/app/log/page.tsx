@@ -92,19 +92,23 @@ export default function LogPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-1 rounded-full bg-black/5 p-1">
+      <div className="flex gap-1 rounded-full bg-surface-muted p-1">
         <button
           onClick={() => setMode("food")}
-          className={`flex-1 rounded-full py-1.5 text-sm font-medium ${
-            mode === "food" ? "bg-white shadow-sm" : "text-black/50"
+          className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
+            mode === "food"
+              ? "bg-surface shadow-sm"
+              : "text-muted-foreground"
           }`}
         >
           From food
         </button>
         <button
           onClick={() => setMode("quick")}
-          className={`flex-1 rounded-full py-1.5 text-sm font-medium ${
-            mode === "quick" ? "bg-white shadow-sm" : "text-black/50"
+          className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
+            mode === "quick"
+              ? "bg-surface shadow-sm"
+              : "text-muted-foreground"
           }`}
         >
           Quick log
@@ -114,10 +118,10 @@ export default function LogPage() {
       {mode === "food" ? (
         <form
           onSubmit={handleFoodSubmit}
-          className="flex flex-col gap-3 rounded-2xl border border-black/10 bg-white p-4"
+          className="flex flex-col gap-3 rounded-3xl border border-border bg-surface p-4 shadow-sm"
         >
           <input
-            className="rounded-lg border border-black/15 px-3 py-2 text-sm"
+            className="rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent"
             placeholder="Search foods…"
             value={search}
             onChange={(e) => {
@@ -127,9 +131,9 @@ export default function LogPage() {
           />
 
           {!selectedFood ? (
-            <ul className="flex max-h-64 flex-col divide-y divide-black/5 overflow-y-auto rounded-lg border border-black/10">
+            <ul className="flex max-h-64 flex-col divide-y divide-border overflow-y-auto rounded-xl border border-border">
               {filteredFoods.length === 0 ? (
-                <li className="px-3 py-3 text-sm text-black/40">
+                <li className="px-3 py-3 text-sm text-muted-foreground">
                   No foods match. Add one on the Foods tab first.
                 </li>
               ) : (
@@ -138,10 +142,10 @@ export default function LogPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedFood(food)}
-                      className="flex w-full flex-col items-start gap-0.5 px-3 py-2 text-left hover:bg-black/5"
+                      className="flex w-full flex-col items-start gap-0.5 px-3 py-2 text-left hover:bg-surface-muted"
                     >
                       <span className="text-sm font-medium">{food.name}</span>
-                      <span className="text-xs text-black/40">
+                      <span className="text-xs text-muted-foreground">
                         {food.kcal_per_portion} kcal · {food.protein_per_portion}
                         g protein / portion
                       </span>
@@ -151,10 +155,10 @@ export default function LogPage() {
               )}
             </ul>
           ) : (
-            <div className="flex items-center justify-between rounded-lg border border-black/10 bg-black/5 px-3 py-2">
+            <div className="flex items-center justify-between rounded-xl border border-accent bg-accent-soft px-3 py-2">
               <div>
                 <p className="text-sm font-medium">{selectedFood.name}</p>
-                <p className="text-xs text-black/40">
+                <p className="text-xs text-muted-foreground">
                   {selectedFood.kcal_per_portion} kcal ·{" "}
                   {selectedFood.protein_per_portion}g protein / portion
                 </p>
@@ -162,7 +166,7 @@ export default function LogPage() {
               <button
                 type="button"
                 onClick={() => setSelectedFood(null)}
-                className="text-xs text-black/40 hover:text-black"
+                className="text-xs font-medium text-accent-soft-foreground hover:underline"
               >
                 Change
               </button>
@@ -172,7 +176,7 @@ export default function LogPage() {
           <label className="flex flex-col gap-1 text-sm">
             Quantity (portions)
             <input
-              className="rounded-lg border border-black/15 px-3 py-2"
+              className="rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-accent"
               type="number"
               inputMode="decimal"
               step="0.25"
@@ -183,7 +187,7 @@ export default function LogPage() {
           </label>
 
           {selectedFood && Number(quantity) > 0 && (
-            <p className="text-xs text-black/40">
+            <p className="text-xs text-muted-foreground">
               = {Math.round(selectedFood.kcal_per_portion * Number(quantity))}{" "}
               kcal ·{" "}
               {Math.round(selectedFood.protein_per_portion * Number(quantity))}
@@ -191,11 +195,11 @@ export default function LogPage() {
             </p>
           )}
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-danger">{error}</p>}
           <button
             type="submit"
             disabled={submitting || !selectedFood}
-            className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+            className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-50"
           >
             {submitting ? "Logging…" : "Log it"}
           </button>
@@ -203,16 +207,16 @@ export default function LogPage() {
       ) : (
         <form
           onSubmit={handleQuickSubmit}
-          className="flex flex-col gap-3 rounded-2xl border border-black/10 bg-white p-4"
+          className="flex flex-col gap-3 rounded-3xl border border-border bg-surface p-4 shadow-sm"
         >
-          <p className="text-xs text-black/40">
+          <p className="text-xs text-muted-foreground">
             For one-off items not worth saving to your food list.
           </p>
           <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col gap-1 text-sm">
               Calories
               <input
-                className="rounded-lg border border-black/15 px-3 py-2"
+                className="rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-accent"
                 type="number"
                 inputMode="decimal"
                 value={kcal}
@@ -223,7 +227,7 @@ export default function LogPage() {
             <label className="flex flex-col gap-1 text-sm">
               Protein (g)
               <input
-                className="rounded-lg border border-black/15 px-3 py-2"
+                className="rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-accent"
                 type="number"
                 inputMode="decimal"
                 value={protein}
@@ -232,11 +236,11 @@ export default function LogPage() {
               />
             </label>
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-danger">{error}</p>}
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+            className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-50"
           >
             {submitting ? "Logging…" : "Log it"}
           </button>

@@ -76,12 +76,12 @@ export default function FoodsPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium text-black/50">
+        <h2 className="text-sm font-medium text-muted-foreground">
           Foods ({foods.length})
         </h2>
         <button
           onClick={() => setShowForm((v) => !v)}
-          className="rounded-full bg-black px-3 py-1.5 text-xs font-medium text-white"
+          className="rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent-hover"
         >
           {showForm ? "Cancel" : "+ New food"}
         </button>
@@ -90,12 +90,12 @@ export default function FoodsPage() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-3 rounded-2xl border border-black/10 bg-white p-4"
+          className="flex flex-col gap-3 rounded-3xl border border-border bg-surface p-4 shadow-sm"
         >
           <label className="flex flex-col gap-1 text-sm">
             Name
             <input
-              className="rounded-lg border border-black/15 px-3 py-2"
+              className="rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-accent"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Anne's kısır (1 portion)"
@@ -106,7 +106,7 @@ export default function FoodsPage() {
             <label className="flex flex-col gap-1 text-sm">
               kcal / portion
               <input
-                className="rounded-lg border border-black/15 px-3 py-2"
+                className="rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-accent"
                 type="number"
                 inputMode="decimal"
                 value={kcal}
@@ -117,7 +117,7 @@ export default function FoodsPage() {
             <label className="flex flex-col gap-1 text-sm">
               protein (g) / portion
               <input
-                className="rounded-lg border border-black/15 px-3 py-2"
+                className="rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-accent"
                 type="number"
                 inputMode="decimal"
                 value={protein}
@@ -126,11 +126,11 @@ export default function FoodsPage() {
               />
             </label>
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-danger">{error}</p>}
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+            className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-50"
           >
             {submitting ? "Saving…" : "Save food"}
           </button>
@@ -138,14 +138,14 @@ export default function FoodsPage() {
       )}
 
       {loading ? (
-        <p className="text-sm text-black/40">Loading…</p>
+        <p className="text-sm text-muted-foreground">Loading…</p>
       ) : foods.length === 0 ? (
-        <p className="text-sm text-black/40">
+        <p className="text-sm text-muted-foreground">
           No foods yet. Add one above — you&apos;ll be able to log it at any
           quantity later.
         </p>
       ) : (
-        <ul className="flex flex-col divide-y divide-black/5 rounded-2xl border border-black/10 bg-white">
+        <ul className="flex flex-col divide-y divide-border rounded-3xl border border-border bg-surface shadow-sm">
           {foods.map((food) => (
             <li
               key={food.id}
@@ -153,14 +153,14 @@ export default function FoodsPage() {
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{food.name}</p>
-                <p className="text-xs text-black/40">
+                <p className="text-xs text-muted-foreground">
                   {food.kcal_per_portion} kcal · {food.protein_per_portion}g
                   protein / portion
                 </p>
               </div>
               <button
                 onClick={() => deleteFood(food.id)}
-                className="shrink-0 rounded-full px-2 py-1 text-xs text-black/40 hover:bg-black/5 hover:text-red-600"
+                className="shrink-0 rounded-full px-2 py-1 text-xs text-muted-foreground hover:bg-surface-muted hover:text-danger"
                 aria-label={`Delete ${food.name}`}
               >
                 ✕

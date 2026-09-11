@@ -15,7 +15,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-10 border-t border-black/10 bg-white/95 backdrop-blur pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface/95 backdrop-blur pb-[env(safe-area-inset-bottom)]">
       <ul className="mx-auto flex max-w-lg justify-around">
         {TABS.map((tab) => {
           const isActive =
@@ -25,10 +25,16 @@ export function BottomNav() {
               <Link
                 href={tab.href}
                 className={`flex flex-col items-center gap-0.5 py-2 text-xs font-medium ${
-                  isActive ? "text-black" : "text-black/40"
+                  isActive ? "text-accent" : "text-muted-foreground"
                 }`}
               >
-                <span className="text-lg leading-none">{tab.icon}</span>
+                <span
+                  className={`flex h-7 w-9 items-center justify-center rounded-full text-lg leading-none ${
+                    isActive ? "bg-accent-soft" : ""
+                  }`}
+                >
+                  {tab.icon}
+                </span>
                 {tab.label}
               </Link>
             </li>

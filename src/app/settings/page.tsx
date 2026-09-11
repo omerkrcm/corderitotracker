@@ -67,23 +67,23 @@ export default function SettingsPage() {
   }
 
   if (!activeUser || loading) {
-    return <p className="text-sm text-black/40">Loading…</p>;
+    return <p className="text-sm text-muted-foreground">Loading…</p>;
   }
 
   return (
     <div className="flex flex-col gap-6">
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-medium text-black/50">
+        <h2 className="text-sm font-medium text-muted-foreground">
           Daily targets · {activeUser.name}
         </h2>
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-3 rounded-2xl border border-black/10 bg-white p-4"
+          className="flex flex-col gap-3 rounded-3xl border border-border bg-surface p-4 shadow-sm"
         >
           <label className="flex flex-col gap-1 text-sm">
             Target calories
             <input
-              className="rounded-lg border border-black/15 px-3 py-2"
+              className="rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-accent"
               type="number"
               inputMode="decimal"
               value={targetKcal}
@@ -93,19 +93,19 @@ export default function SettingsPage() {
           <label className="flex flex-col gap-1 text-sm">
             Target protein (g)
             <input
-              className="rounded-lg border border-black/15 px-3 py-2"
+              className="rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-accent"
               type="number"
               inputMode="decimal"
               value={targetProtein}
               onChange={(e) => setTargetProtein(e.target.value)}
             />
           </label>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          {saved && <p className="text-sm text-green-600">Saved.</p>}
+          {error && <p className="text-sm text-danger">{error}</p>}
+          {saved && <p className="text-sm text-protein">Saved.</p>}
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+            className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent-hover disabled:opacity-50"
           >
             {submitting ? "Saving…" : "Save targets"}
           </button>
@@ -113,11 +113,11 @@ export default function SettingsPage() {
       </section>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-black/50">
+        <h2 className="text-sm font-medium text-muted-foreground">
           iOS Shortcuts user ID
         </h2>
-        <div className="rounded-2xl border border-black/10 bg-white p-4">
-          <p className="mb-2 text-xs text-black/40">
+        <div className="rounded-3xl border border-border bg-surface p-4 shadow-sm">
+          <p className="mb-2 text-xs text-muted-foreground">
             Hardcode this ID into a personal Shortcut so it always logs to{" "}
             {activeUser.name}, regardless of which profile is active in the
             app. Send a POST to <code>/api/log-entries</code> or{" "}
@@ -125,12 +125,12 @@ export default function SettingsPage() {
             JSON body.
           </p>
           <div className="flex items-center gap-2">
-            <code className="flex-1 truncate rounded-lg bg-black/5 px-3 py-2 text-xs">
+            <code className="flex-1 truncate rounded-xl bg-surface-muted px-3 py-2 text-xs">
               {activeUser.id}
             </code>
             <button
               onClick={copyUserId}
-              className="shrink-0 rounded-lg border border-black/15 px-3 py-2 text-xs font-medium"
+              className="shrink-0 rounded-xl border border-border px-3 py-2 text-xs font-medium hover:bg-surface-muted"
             >
               {copied ? "Copied!" : "Copy"}
             </button>
