@@ -3,33 +3,34 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useProfile } from "@/lib/profile-context";
-import { toDateString, formatTime } from "@/lib/date";
+import { toDateString, addDays, formatDateLabel, formatTime } from "@/lib/date";
 import { resolveEntryTotals, type LogEntry, type Target } from "@/lib/types";
 import { ProgressBar } from "@/components/ProgressBar";
 import { getUserColorClass, getInitial } from "@/lib/user-color";
 
 export default function DashboardPage() {
   const { activeUser, loading: profileLoading } = useProfile();
+  const [selectedDate, setSelectedDate] = useState(() => toDateString());
   const [entries, setEntries] = useState<LogEntry[]>([]);
   const [target, setTarget] = useState<Target | null>(null);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const today = toDateString();
+  const isToday = selectedDate === toDateString();
 
   const load = useCallback(() => {
     if (!activeUser) return;
     Promise.all([
-      fetch(`/api/log-entries?user_id=${activeUser.id}&date=${today}`).then((r) =>
-        r.json()
-      ),
+      fetch(
+        `/api/log-entries?user_id=${activeUser.id}&date=${selectedDate}`
+      ).then((r) => r.json()),
       fetch(`/api/targets?user_id=${activeUser.id}`).then((r) => r.json()),
     ]).then(([entriesData, targetData]) => {
       setEntries(entriesData);
       setTarget(targetData);
       setLoading(false);
     });
-  }, [activeUser, today]);
+  }, [activeUser, selectedDate]);
 
   useEffect(() => {
     load();
@@ -57,16 +58,35 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <section className="flex flex-col gap-4 rounded-3xl border border-border bg-surface p-4 shadow-sm">
-        <h2 className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-          <span
-            className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-semibold ${getUserColorClass(
-              activeUser.id
-            )}`}
+        <div className="flex items-center justify-between gap-2">
+          <button
+            onClick={() => setSelectedDate((d) => addDays(d, -1))}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-lg text-muted-foreground hover:bg-surface-muted"
+            aria-label="Previous day"
           >
-            {getInitial(activeUser.name)}
-          </span>
-          Today · {activeUser.name}
-        </h2>
+            ‹
+          </button>
+          <h2 className="flex min-w-0 items-center justify-center gap-2 text-sm font-medium text-muted-foreground">
+            <span
+              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${getUserColorClass(
+                activeUser.id
+              )}`}
+            >
+              {getInitial(activeUser.name)}
+            </span>
+            <span className="truncate">
+              {formatDateLabel(selectedDate)} · {activeUser.name}
+            </span>
+          </h2>
+          <button
+            onClick={() => setSelectedDate((d) => addDays(d, 1))}
+            disabled={isToday}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-lg text-muted-foreground hover:bg-surface-muted disabled:opacity-20"
+            aria-label="Next day"
+          >
+            ›
+          </button>
+        </div>
         <ProgressBar
           label="Calories"
           value={totals.kcal}
@@ -99,14 +119,14 @@ export default function DashboardPage() {
       </div>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          Today&apos;s entries
-        </h2>
+        <h2 className="text-sm font-medium text-muted-foreground">Entries</h2>
         {loading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : entries.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Nothing logged yet today.
+            {isToday
+              ? "Nothing logged yet today."
+              : `Nothing logged on ${formatDateLabel(selectedDate)}.`}
           </p>
         ) : (
           <ul className="flex flex-col divide-y divide-border rounded-3xl border border-border bg-surface shadow-sm">

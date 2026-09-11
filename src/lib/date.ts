@@ -22,6 +22,13 @@ export function formatTime(time: string): string {
   return `${hour12}:${m} ${period}`;
 }
 
+/** Shift a YYYY-MM-DD string by `days` (negative goes backward), in local time. */
+export function addDays(date: string, days: number): string {
+  const d = new Date(`${date}T00:00:00`);
+  d.setDate(d.getDate() + days);
+  return toDateString(d);
+}
+
 export function formatDateLabel(date: string): string {
   const today = toDateString();
   const yesterday = toDateString(new Date(Date.now() - 86400000));
