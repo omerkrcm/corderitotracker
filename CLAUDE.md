@@ -56,6 +56,9 @@ a **quantity multiplier**, not a duplicated food record.
   - For **quick log** / one-off items not worth saving to `foods`:
     food_id is null and the entry carries its own `kcal` / `protein`
     directly instead.
+  - meal: one of breakfast/lunch/dinner/snack. Defaults to "snack" if not
+    given (e.g. an older Shortcut payload); the dashboard groups the day's
+    entries under these four headings, in that fixed order.
 - `weight_logs`: id, user_id, date, weight (manual entry)
 - `targets`: user_id, target_kcal, target_protein (editable per user)
 
@@ -63,10 +66,10 @@ Example: "Anne's kısır" is created once as 1 portion = 300 kcal / 10g
 protein. Either user can later log it at any quantity (e.g. 1.5) without
 creating a new food — the app computes 450 kcal / 15g protein at log time.
 
-## Implementation status (v1 scaffolded)
+## Implementation status
 - Next.js App Router + TypeScript + Tailwind, Supabase Postgres via a
   server-only client (service role key) — see `README.md` for the full
-  setup path and `supabase/migrations/0001_init.sql` for the schema.
+  setup path and `supabase/migrations/` for the schema (applied in order).
 - Pages: `/` (dashboard), `/foods`, `/log`, `/weight`, `/settings`
   (targets + each profile's Shortcuts user ID).
 - API routes under `src/app/api/**` are the single source of truth for
@@ -74,6 +77,14 @@ creating a new food — the app computes 450 kcal / 15g protein at log time.
   write, which is also what the iOS Shortcuts integration hits directly.
 - PWA manifest + icons are in place for Add to Home Screen; no offline
   support / service worker yet (see open questions below).
+- Warm/colorful design system with automatic light/dark mode
+  (`src/app/globals.css`, follows the phone's system setting).
+- Dashboard: day-by-day navigation (prev/next arrows, capped at today),
+  a "This week" mini bar chart of calories/protein vs. target, and the
+  day's entries grouped under Breakfast/Lunch/Dinner/Snack.
+- `/log` supports backdating (date picker capped at today) and a meal
+  picker; logging from a past day's dashboard view carries that date
+  through automatically.
 
 ## Not decided yet / open questions
 - Whether to add offline support or push notifications to the PWA later

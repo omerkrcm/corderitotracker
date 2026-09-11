@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase-server";
 import { errorResponse, requireValidUserId } from "@/lib/api-helpers";
+import { isMeal } from "@/lib/types";
 
 // GET /api/log-entries?user_id=...&date=YYYY-MM-DD
 // or   /api/log-entries?user_id=...&from=YYYY-MM-DD&to=YYYY-MM-DD (inclusive range)
@@ -39,17 +40,23 @@ export async function GET(request: NextRequest) {
 // hardcode user_id, bypassing the profile picker entirely).
 //
 // Body shape is either:
-//   { user_id, food_id, quantity, date?, time? }
+//   { user_id, food_id, quantity, date?, time?, meal? }
 // or a quick log:
-//   { user_id, kcal, protein, date?, time? }
+//   { user_id, kcal, protein, date?, time?, meal? }
+// meal defaults to "snack" when omitted (e.g. a Shortcut built before this
+// field existed), and must be one of breakfast/lunch/dinner/snack otherwise.
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   if (!body) return errorResponse("Invalid JSON body");
 
-  const { user_id, food_id, quantity, kcal, protein, date, time } = body;
+  const { user_id, food_id, quantity, kcal, protein, date, time, meal } = body;
 
   const userCheck = await requireValidUserId(user_id);
   if (!userCheck.ok) return userCheck.response;
+
+  if (meal != null && !isMeal(meal)) {
+    return errorResponse("meal must be one of breakfast, lunch, dinner, snack");
+  }
 
   const now = new Date();
   const resolvedDate =
@@ -67,6 +74,7 @@ export async function POST(request: Request) {
     user_id,
     date: resolvedDate,
     time: resolvedTime,
+    meal: meal ?? "snack",
   };
 
   if (food_id != null) {

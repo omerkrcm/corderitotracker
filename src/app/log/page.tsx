@@ -3,8 +3,8 @@
 import { Suspense, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useProfile } from "@/lib/profile-context";
-import { toDateString, formatDateLabel } from "@/lib/date";
-import type { Food } from "@/lib/types";
+import { toDateString, formatDateLabel, suggestMeal } from "@/lib/date";
+import { MEAL_OPTIONS, MEAL_LABELS, MEAL_ICONS, type Food, type Meal } from "@/lib/types";
 
 export default function LogPage() {
   return (
@@ -28,6 +28,7 @@ function LogPageContent() {
   const [date, setDate] = useState(
     () => searchParams.get("date") || toDateString()
   );
+  const [meal, setMeal] = useState<Meal>(() => suggestMeal());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,6 +67,7 @@ function LogPageContent() {
         food_id: selectedFood.id,
         quantity: qty,
         date,
+        meal,
       }),
     });
     setSubmitting(false);
@@ -98,6 +100,7 @@ function LogPageContent() {
         kcal: kcalNum,
         protein: proteinNum,
         date,
+        meal,
       }),
     });
     setSubmitting(false);
@@ -138,6 +141,27 @@ function LogPageContent() {
           )}
         </span>
       </label>
+
+      <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface p-3 shadow-sm">
+        <span className="text-xs font-medium text-muted-foreground">Meal</span>
+        <div className="grid grid-cols-4 gap-2">
+          {MEAL_OPTIONS.map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMeal(m)}
+              className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-2.5 text-xs font-medium transition-colors ${
+                meal === m
+                  ? "border-accent bg-accent-soft text-accent-soft-foreground"
+                  : "border-border text-muted-foreground hover:bg-surface-muted"
+              }`}
+            >
+              <span className="text-lg leading-none">{MEAL_ICONS[m]}</span>
+              {MEAL_LABELS[m]}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="flex gap-1 rounded-full bg-surface-muted p-1">
         <button

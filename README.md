@@ -14,10 +14,13 @@ cover 2 users.
 - `log_entries` reference a food + a quantity multiplier (e.g. food ×1.5) —
   they don't duplicate the food's numbers. Or, for a one-off item not worth
   saving, a "quick log" entry carries its own kcal/protein directly and has
-  no food reference.
+  no food reference. Every entry also carries a `meal`
+  (breakfast/lunch/dinner/snack), which is how the dashboard groups them.
 - `weight_logs` and `targets` are simple per-user tables.
 
-See `supabase/migrations/0001_init.sql` for the full schema.
+See `supabase/migrations/` for the full schema — run each file there once,
+in order, in the Supabase SQL editor (`0001_init.sql` first, then any
+later-numbered files as they're added).
 
 There's no login system. Instead:
 
@@ -38,12 +41,15 @@ working app.
 
 1. Go to [supabase.com](https://supabase.com), sign in, and click **New
    project**. Pick any name/region; the free tier is fine.
-2. Once it's provisioned, open **SQL Editor** in the left sidebar, paste in
-   the contents of `supabase/migrations/0001_init.sql`, and run it. This
-   creates all the tables and seeds two `users` rows named "Omer" and
-   "Wife" — rename those two rows (Table Editor → `users`) to whatever
-   display names you actually want; nothing else references the names, so
-   this is safe to do any time.
+2. Once it's provisioned, open **SQL Editor** in the left sidebar and run
+   each file in `supabase/migrations/`, in filename order (`0001_init.sql`
+   first). `0001_init.sql` creates all the tables and seeds two `users`
+   rows named "Omer" and "Wife" — rename those two rows (Table Editor →
+   `users`) to whatever display names you actually want; nothing else
+   references the names, so this is safe to do any time. Later-numbered
+   files are additive schema changes — if you already ran `0001` on an
+   earlier setup, you only need to run the new ones you haven't applied
+   yet (e.g. `0002_add_meal.sql`).
 3. Go to **Settings → API**. You'll need two values in the next step:
    - **Project URL**
    - **`service_role` secret key** (not the `anon` key — the service role
@@ -95,13 +101,16 @@ this" from the home screen or Siri.
    - Headers: `Content-Type: application/json`
    - Request body (JSON), e.g. for a food you've already saved:
      ```json
-     { "user_id": "YOUR-USER-ID", "food_id": "SOME-FOOD-ID", "quantity": 1 }
+     { "user_id": "YOUR-USER-ID", "food_id": "SOME-FOOD-ID", "quantity": 1, "meal": "lunch" }
      ```
      or a quick log:
      ```json
-     { "user_id": "YOUR-USER-ID", "kcal": 250, "protein": 20 }
+     { "user_id": "YOUR-USER-ID", "kcal": 250, "protein": 20, "meal": "snack" }
      ```
-   - `date`/`time` are optional and default to "now" on the server.
+   - `date`/`time` are optional and default to "now" on the server. `meal`
+     is optional too (one of `breakfast`/`lunch`/`dinner`/`snack`) and
+     defaults to `"snack"` if omitted — worth hardcoding per-Shortcut if
+     you build separate ones per meal.
 3. Same idea for weight: `POST /api/log-entries` → `/api/weight` with
    `{ "user_id": "YOUR-USER-ID", "weight": 78.4 }`.
 
@@ -118,7 +127,7 @@ phone.
 - `src/lib/api-helpers.ts` — shared `user_id` validation for API routes.
 - `src/lib/profile-context.tsx` — the client-side "who's logging" state,
   persisted to local storage.
-- `supabase/migrations/0001_init.sql` — full DB schema + seed data.
+- `supabase/migrations/` — DB schema, applied in filename order.
 
 ## Not built yet (see project CLAUDE.md for the running list)
 

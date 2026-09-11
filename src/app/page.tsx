@@ -5,7 +5,14 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useProfile } from "@/lib/profile-context";
 import { toDateString, addDays, formatDateLabel, formatTime } from "@/lib/date";
-import { resolveEntryTotals, type LogEntry, type Target } from "@/lib/types";
+import {
+  resolveEntryTotals,
+  MEAL_OPTIONS,
+  MEAL_LABELS,
+  MEAL_ICONS,
+  type LogEntry,
+  type Target,
+} from "@/lib/types";
 import { ProgressBar } from "@/components/ProgressBar";
 import { WeeklySummary } from "@/components/WeeklySummary";
 import { getUserColorClass, getInitial } from "@/lib/user-color";
@@ -150,42 +157,71 @@ function DashboardContent() {
               : `Nothing logged on ${formatDateLabel(selectedDate)}.`}
           </p>
         ) : (
-          <ul className="flex flex-col divide-y divide-border rounded-3xl border border-border bg-surface shadow-sm">
-            {entries.map((entry) => {
-              const { kcal, protein } = resolveEntryTotals(entry);
-              const name = entry.food?.name ?? "Quick log";
+          <div className="flex flex-col gap-4">
+            {MEAL_OPTIONS.map((meal) => {
+              const mealEntries = entries.filter((e) => e.meal === meal);
+              if (mealEntries.length === 0) return null;
+
+              const mealTotals = mealEntries.reduce(
+                (acc, e) => {
+                  const { kcal, protein } = resolveEntryTotals(e);
+                  return { kcal: acc.kcal + kcal, protein: acc.protein + protein };
+                },
+                { kcal: 0, protein: 0 }
+              );
+
               return (
-                <li
-                  key={entry.id}
-                  className="flex items-center justify-between gap-3 px-4 py-3"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">
-                      {name}
-                      {entry.quantity != null && entry.quantity !== 1 && (
-                        <span className="text-muted-foreground">
-                          {" "}
-                          ×{entry.quantity}
-                        </span>
-                      )}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatTime(entry.time)} · {Math.round(kcal)} kcal ·{" "}
-                      {Math.round(protein)}g protein
-                    </p>
+                <div key={meal} className="flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between px-1">
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                      <span>{MEAL_ICONS[meal]}</span>
+                      {MEAL_LABELS[meal]}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {Math.round(mealTotals.kcal)} kcal ·{" "}
+                      {Math.round(mealTotals.protein)}g protein
+                    </span>
                   </div>
-                  <button
-                    onClick={() => deleteEntry(entry.id)}
-                    disabled={deletingId === entry.id}
-                    className="shrink-0 rounded-full px-2 py-1 text-xs text-muted-foreground hover:bg-surface-muted hover:text-danger"
-                    aria-label={`Delete ${name}`}
-                  >
-                    ✕
-                  </button>
-                </li>
+                  <ul className="flex flex-col divide-y divide-border rounded-3xl border border-border bg-surface shadow-sm">
+                    {mealEntries.map((entry) => {
+                      const { kcal, protein } = resolveEntryTotals(entry);
+                      const name = entry.food?.name ?? "Quick log";
+                      return (
+                        <li
+                          key={entry.id}
+                          className="flex items-center justify-between gap-3 px-4 py-3"
+                        >
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-medium">
+                              {name}
+                              {entry.quantity != null && entry.quantity !== 1 && (
+                                <span className="text-muted-foreground">
+                                  {" "}
+                                  ×{entry.quantity}
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {formatTime(entry.time)} · {Math.round(kcal)} kcal ·{" "}
+                              {Math.round(protein)}g protein
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => deleteEntry(entry.id)}
+                            disabled={deletingId === entry.id}
+                            className="shrink-0 rounded-full px-2 py-1 text-xs text-muted-foreground hover:bg-surface-muted hover:text-danger"
+                            aria-label={`Delete ${name}`}
+                          >
+                            ✕
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               );
             })}
-          </ul>
+          </div>
         )}
       </section>
     </div>

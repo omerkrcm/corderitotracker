@@ -14,6 +14,16 @@ export function toTimeString(d: Date = new Date()): string {
   return `${hours}:${minutes}:${seconds}`;
 }
 
+/** A reasonable default meal for the current time of day, to pre-select
+ * (not enforce) the meal picker when logging something. */
+export function suggestMeal(d: Date = new Date()): "breakfast" | "lunch" | "dinner" | "snack" {
+  const hour = d.getHours();
+  if (hour >= 5 && hour < 11) return "breakfast";
+  if (hour >= 11 && hour < 15) return "lunch";
+  if (hour >= 15 && hour < 18) return "snack";
+  return "dinner";
+}
+
 export function formatTime(time: string): string {
   const [h, m] = time.split(":");
   const hour = Number(h);

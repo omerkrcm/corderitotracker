@@ -13,6 +13,27 @@ export type Food = {
   created_at: string;
 };
 
+export const MEAL_OPTIONS = ["breakfast", "lunch", "dinner", "snack"] as const;
+export type Meal = (typeof MEAL_OPTIONS)[number];
+
+export const MEAL_LABELS: Record<Meal, string> = {
+  breakfast: "Breakfast",
+  lunch: "Lunch",
+  dinner: "Dinner",
+  snack: "Snack",
+};
+
+export const MEAL_ICONS: Record<Meal, string> = {
+  breakfast: "🍳",
+  lunch: "🥗",
+  dinner: "🍽️",
+  snack: "🍎",
+};
+
+export function isMeal(value: unknown): value is Meal {
+  return typeof value === "string" && (MEAL_OPTIONS as readonly string[]).includes(value);
+}
+
 export type LogEntry = {
   id: string;
   user_id: string;
@@ -22,6 +43,7 @@ export type LogEntry = {
   quantity: number | null;
   kcal: number | null;
   protein: number | null;
+  meal: Meal;
   created_at: string;
   // Populated by API when food_id is set, so the client never has to
   // re-fetch the food to display/compute totals.
