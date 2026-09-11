@@ -6,6 +6,7 @@ import { useProfile } from "@/lib/profile-context";
 import { toDateString, formatTime } from "@/lib/date";
 import { resolveEntryTotals, type LogEntry, type Target } from "@/lib/types";
 import { ProgressBar } from "@/components/ProgressBar";
+import { getUserColor, getInitial } from "@/lib/user-color";
 
 export default function DashboardPage() {
   const { activeUser, loading: profileLoading } = useProfile();
@@ -56,7 +57,16 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <section className="flex flex-col gap-4 rounded-2xl border border-black/10 bg-white p-4">
-        <h2 className="text-sm font-medium text-black/50">
+        <h2 className="flex items-center gap-2 text-sm font-medium text-black/50">
+          <span
+            className="flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-semibold"
+            style={{
+              backgroundColor: getUserColor(activeUser.id).bg,
+              color: getUserColor(activeUser.id).fg,
+            }}
+          >
+            {getInitial(activeUser.name)}
+          </span>
           Today · {activeUser.name}
         </h2>
         <ProgressBar
