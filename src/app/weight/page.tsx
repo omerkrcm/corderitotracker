@@ -3,6 +3,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useProfile } from "@/lib/profile-context";
 import { toDateString, formatDateLabel } from "@/lib/date";
+import { getUserColorVar } from "@/lib/user-color";
+import { WeightChart } from "@/components/WeightChart";
 import type { WeightLog } from "@/lib/types";
 
 export default function WeightPage() {
@@ -96,6 +98,10 @@ export default function WeightPage() {
           {submitting ? "Saving…" : "Log weight"}
         </button>
       </form>
+
+      {!loading && logs.length > 0 && (
+        <WeightChart logs={logs} color={getUserColorVar(activeUser.id)} />
+      )}
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-muted-foreground">History</h2>

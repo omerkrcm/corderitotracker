@@ -70,3 +70,11 @@ export function dayAbbrev(date: string): string {
     weekday: "short",
   });
 }
+
+/** Compact "Sep 10" style label, for chart axes/tooltips. */
+export function formatShortDate(date: string): string {
+  return new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+}
