@@ -72,7 +72,7 @@ export default function WeightPage() {
               className="rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-accent"
               type="number"
               inputMode="decimal"
-              step="0.1"
+              step="any"
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
               placeholder="e.g. 78.4"
