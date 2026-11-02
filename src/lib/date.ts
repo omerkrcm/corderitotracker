@@ -41,9 +41,9 @@ export function addDays(date: string, days: number): string {
 
 export function formatDateLabel(date: string): string {
   const today = toDateString();
-  const yesterday = toDateString(new Date(Date.now() - 86400000));
   if (date === today) return "Today";
-  if (date === yesterday) return "Yesterday";
+  if (date === addDays(today, -1)) return "Yesterday";
+  if (date === addDays(today, 1)) return "Tomorrow";
   return new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
     weekday: "short",
     month: "short",

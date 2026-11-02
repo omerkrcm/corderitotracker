@@ -126,7 +126,6 @@ function LogPageContent() {
           <input
             type="date"
             value={date}
-            max={toDateString()}
             onChange={(e) => setDate(e.target.value)}
             className="rounded-lg border border-border bg-background px-2 py-1 text-xs outline-none focus:border-accent"
           />

@@ -100,8 +100,7 @@ function DashboardContent() {
           </h2>
           <button
             onClick={() => setSelectedDate((d) => addDays(d, 1))}
-            disabled={isToday}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-lg text-muted-foreground hover:bg-surface-muted disabled:opacity-20"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-lg text-muted-foreground hover:bg-surface-muted"
             aria-label="Next day"
           >
             ›
@@ -154,7 +153,9 @@ function DashboardContent() {
           <p className="text-sm text-muted-foreground">
             {isToday
               ? "Nothing logged yet today."
-              : `Nothing logged on ${formatDateLabel(selectedDate)}.`}
+              : selectedDate > toDateString()
+                ? `Nothing planned for ${formatDateLabel(selectedDate)} yet.`
+                : `Nothing logged on ${formatDateLabel(selectedDate)}.`}
           </p>
         ) : (
           <div className="flex flex-col gap-4">
